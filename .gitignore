@@ -221,3 +221,19 @@ __marimo__/
 
 src/.amlignore
 tests/.amlignore
+
+# Azure ML generated files
+.amlignore
+**/.amlignore
+*.amltmp
+
+# Jupyter / Azure ML notebook checkpoints
+.ipynb_aml_checkpoints/
+**/.ipynb_aml_checkpoints/
+
+# Project data
+data/raw/*
+!data/raw/.gitkeep
+
+data/processed/*
+!data/processed/.gitkeep
