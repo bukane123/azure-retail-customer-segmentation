@@ -237,3 +237,6 @@ data/raw/*
 
 data/processed/*
 !data/processed/.gitkeep
+
+# Local trained model and preprocessing artefacts
+*.joblib

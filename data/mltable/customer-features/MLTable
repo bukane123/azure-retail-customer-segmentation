@@ -1,0 +1,7 @@
+paths:
+- file: azureml://subscriptions/9d0e4acf-2675-4581-90be-c8f45f73d333/resourcegroups/clustering-project/workspaces/clustering-workspace/datastores/workspaceblobstore/paths/LocalUpload/7f110ae40044adc4a2422decff6bf787d8bc44b91a78678bd4304cc45b4b42d9/online_retail_customer_features.parquet
+transformations:
+- read_parquet:
+    include_path_column: false
+    path_column: Path
+type: mltable

@@ -1,0 +1,10 @@
+[
+    "Recency",
+    "Frequency",
+    "MonetaryValue",
+    "UniqueProducts",
+    "CustomerTenureDays",
+    "AverageQuantityPerOrder",
+    "PostageInvoiceShare",
+    "ObservedMerchandiseReturnValueRate"
+]

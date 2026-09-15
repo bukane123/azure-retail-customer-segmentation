@@ -1,0 +1,28 @@
+{
+    "model_type": "KMeans",
+    "n_clusters": 6,
+    "random_state": 42,
+    "n_init": 50,
+    "training_customers": 4334,
+    "model_features": [
+        "Recency",
+        "Frequency",
+        "MonetaryValue",
+        "UniqueProducts",
+        "CustomerTenureDays",
+        "AverageQuantityPerOrder",
+        "PostageInvoiceShare",
+        "ObservedMerchandiseReturnValueRate"
+    ],
+    "silhouette_score": 0.22177068954969167,
+    "calinski_harabasz_score": 1387.0664856423357,
+    "davies_bouldin_score": 1.1944906249620864,
+    "segment_names": {
+        "0": "Active Regular Customers",
+        "1": "Lapsed Low-Value Customers",
+        "2": "Postage-Heavy Occasional Customers",
+        "3": "High-Value Loyal Customers",
+        "4": "High-Return Customers",
+        "5": "Larger-Basket Low-Frequency Customers"
+    }
+}
