@@ -240,3 +240,7 @@ data/processed/*
 
 # Local trained model and preprocessing artefacts
 *.joblib
+
+# Azure ML downloaded job artefacts
+feature_job_logs/
+training_job_output/
