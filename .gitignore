@@ -244,3 +244,15 @@ data/processed/*
 # Azure ML downloaded job artefacts
 feature_job_logs/
 training_job_output/
+
+# Azure ML local test outputs and downloaded job artefacts
+cleaning_test_output/
+end_to_end_preprocessing_output/
+end_to_end_training_output/
+feature_job_failure_2/
+feature_pipeline_failure/
+final_training_output/
+ingestion_test_logs/
+ingestion_test_output/
+training_v3_failure/
+training_v4_failure/

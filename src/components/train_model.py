@@ -17,7 +17,8 @@ model_output_dir:
 segment_output_path:
     Customer-to-segment assignment dataset.
 """
-
+import shutil
+import os
 import argparse
 import json
 from pathlib import Path
@@ -59,11 +60,22 @@ def parse_args():
         help="Path where final customer segment assignments will be saved.",
     )
 
+    # Fitted preprocessing artefacts produced during training.
+    # These are packaged with the model so future scoring uses
+    # the exact same fitted preprocessing configuration.
+    parser.add_argument(
+        "--preprocessing_artifacts",
+        type=str,
+        required=True,
+        help="Directory containing fitted preprocessing artefacts.",
+    )
+
     return parser.parse_args()
 
 
 def main():
     """Train and persist the final customer segmentation model."""
+   
 
     args = parse_args()
 
@@ -231,6 +243,39 @@ def main():
     joblib.dump(
         final_kmeans,
         model_path,
+    )
+
+        # --------------------------------------------------------------
+    # Package fitted preprocessing artefacts with the trained model
+    # --------------------------------------------------------------
+    # New customer data must use the exact StandardScaler and feature
+    # configuration fitted during training. Copy those artefacts into
+    # the model output so the registered model is self-contained.
+
+    preprocessing_files = [
+        "standard_scaler.joblib",
+        "feature_order.json",
+        "preprocessing_metadata.json",
+    ]
+
+    for file_name in preprocessing_files:
+        source_path = os.path.join(
+            args.preprocessing_artifacts,
+            file_name,
+        )
+
+        destination_path = os.path.join(
+            args.model_output_dir,
+            file_name,
+        )
+
+        shutil.copy2(
+            source_path,
+            destination_path,
+        )
+
+    print(
+        "Preprocessing artefacts packaged with trained model."
     )
 
     # ------------------------------------------------------------------
