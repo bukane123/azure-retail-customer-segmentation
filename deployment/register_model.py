@@ -19,7 +19,7 @@ ml_client = MLClient.from_config(
 
 # Register directly from the Azure ML job output so the registered
 # model remains associated with the pipeline run that produced it.
-training_job_name = "4374b932-9c11-47f2-b107-d91ef25f2932"
+training_job_name = "4af2c230-005e-4c6c-bfa7-24b743b1b6c7"
 
 model_path = (
     f"azureml://jobs/{training_job_name}"
@@ -28,17 +28,21 @@ model_path = (
 
 pipeline_model = Model(
     name="online-retail-kmeans-segmentation",
-    version="2",
+    version="3",
     path=model_path,
     type=AssetTypes.CUSTOM_MODEL,
     description=(
         "Six-cluster K-Means customer segmentation model produced "
-        "by the Azure ML customer segmentation pipeline."
+        "by the end-to-end Azure ML training pipeline. The model "
+        "package includes the fitted StandardScaler and preprocessing "
+        "configuration required for reproducible batch scoring."
     ),
     tags={
         "algorithm": "KMeans",
         "clusters": "6",
         "pipeline_trained": "true",
+        "self_contained": "true",
+        "supports_batch_scoring": "true",
     },
 )
 

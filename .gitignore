@@ -256,3 +256,6 @@ ingestion_test_logs/
 ingestion_test_output/
 training_v3_failure/
 training_v4_failure/
+
+azure_scoring_output/
+scoring_test_output/
