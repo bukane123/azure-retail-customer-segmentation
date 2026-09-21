@@ -2,116 +2,172 @@
 
 ## Project Overview
 
-This project builds a production-ready customer segmentation solution using
-Azure Machine Learning, clustering algorithms, MLflow and batch inference.
+This project implements an end-to-end customer segmentation solution using
+Azure Machine Learning and unsupervised machine learning.
 
-The objective is to identify meaningful groups of retail customers based on
-their purchasing behaviour so that the business can better understand and
-engage different customer groups.
+The solution transforms raw retail transaction data into actionable customer
+segments through automated data validation, cleaning, feature engineering,
+preprocessing, model training, model registration and batch scoring.
+
+The project was designed to demonstrate a reproducible, production-style
+machine learning workflow rather than a standalone modelling notebook.
+
+
+## Solution Architecture
+
+```mermaid
+flowchart LR
+    A[Raw Excel / CSV] --> B[Ingestion & Validation]
+    B --> C[Transaction Cleaning]
+    C --> D[Customer Feature Engineering]
+
+    D --> E[Training Preprocessing]
+    E --> F[K-Means Training]
+    F --> G[Azure ML Model Registry]
+
+    D --> H[Batch Scoring]
+    G --> H
+    H --> I[Customer Segments]
+```
+
+The training workflow fits and stores the preprocessing artefacts alongside the
+K-Means model. The scoring workflow reuses those saved artefacts and the
+registered model to ensure incoming customer data is processed consistently
+with training.
+
+---
 
 ## Business Problem
 
-Retail customers behave differently. Some customers purchase frequently,
-some spend significantly more than others, some are new customers, and some
-may have stopped purchasing.
+Retail customers behave differently.
 
-Treating every customer in the same way can lead to poorly targeted marketing,
-inefficient customer engagement and missed retention opportunities.
+Some purchase frequently, some generate significantly more value, some return
+large amounts of merchandise, while others purchase only occasionally or may
+have become inactive.
 
-The business therefore needs a data-driven way to group customers with similar
-behaviour.
+Treating all customers in the same way can result in poorly targeted
+engagement, inefficient marketing activity and missed retention opportunities.
 
-## Business Objective
+The objective is therefore to identify groups of customers with similar
+behaviour that can support more informed customer engagement and analysis.
 
-Build a customer segmentation model that groups customers according to their
-transaction behaviour.
+---
 
-The resulting segments should be:
+## Solution
 
-- distinct enough to describe meaningful differences in customer behaviour;
-- understandable by business users;
-- large enough to support useful business actions;
-- stable enough to be used repeatedly as new transaction data becomes available;
-- reproducible through an automated Azure Machine Learning pipeline.
+Customer-level behavioural features are engineered from raw transaction data
+and used to train a K-Means clustering model.
 
-## Machine Learning Problem
+The final solution supports two automated workflows:
 
-This is an unsupervised machine learning problem.
+### Training Pipeline
 
-There is no existing target column that identifies the correct customer
-segment.
+Raw Excel / CSV  
+→ ingestion and schema validation  
+→ transaction cleaning  
+→ customer feature engineering  
+→ feature transformation and scaling  
+→ K-Means model training  
+→ model artefact packaging  
+→ Azure ML model registration
 
-Clustering algorithms will therefore be used to discover naturally occurring
-groups of customers based on behavioural features.
+### Batch Scoring Pipeline
 
-Candidate algorithms may include:
+New raw Excel / CSV  
+→ ingestion and validation  
+→ transaction cleaning  
+→ customer feature engineering  
+→ apply saved preprocessing artefacts  
+→ registered K-Means model prediction  
+→ customer segment output
 
-- K-Means
-- Gaussian Mixture Models
-- Hierarchical Clustering
-- DBSCAN
+The scoring workflow reuses the StandardScaler fitted during training rather
+than fitting preprocessing again on incoming data.
 
-## Initial Customer Features
+---
 
-Customer-level features will be engineered from transaction data.
+## Final Model
 
-Initial candidate features include:
+The selected solution is a six-cluster K-Means model using eight behavioural
+features:
 
 - Recency
 - Frequency
 - Monetary Value
-- Average Order Value
-- Number of Products Purchased
+- Unique Products
 - Customer Tenure
-- Purchase Frequency
+- Average Quantity per Order
+- Postage Invoice Share
+- Observed Merchandise Return Value Rate
 
-The final feature set will be determined during exploratory analysis and
-feature engineering.
+Model configuration:
 
-## Model Evaluation
+- Algorithm: K-Means
+- Number of clusters: 6
+- Random state: 42
+- `n_init`: 50
+- Training customers: 4,334
 
-Because clustering has no known target label, traditional classification
-metrics such as accuracy cannot be used.
+### Clustering Metrics
 
-Candidate clustering solutions will be evaluated using:
+| Metric | Result |
+|---|---:|
+| Silhouette Score | 0.2218 |
+| Calinski-Harabasz Score | 1387.07 |
+| Davies-Bouldin Score | 1.1945 |
 
-- Silhouette Score
-- Davies-Bouldin Index
-- Calinski-Harabasz Score
-- cluster stability
-- cluster size and distribution
-- business interpretability
+Clustering metrics were considered alongside cluster size, behavioural
+distinctiveness and business interpretability rather than using a single
+metric to select the final solution.
 
-The final model will not be selected solely from one numerical metric.
+---
 
-## Production Architecture
+## Customer Segments
 
-The project will eventually include:
+The final model identified six customer groups:
 
-Raw transaction data
-→ data validation
-→ customer feature engineering
-→ preprocessing
-→ clustering model training
-→ model evaluation
-→ MLflow experiment tracking
-→ model registration
-→ Azure ML pipeline
-→ batch customer segmentation
-→ monitoring and retraining
+| Segment | Customers |
+|---|---:|
+| Active Regular Customers | 1,362 |
+| Larger-Basket Low-Frequency Customers | 1,140 |
+| Lapsed Low-Value Customers | 847 |
+| High-Value Loyal Customers | 669 |
+| Postage-Heavy Occasional Customers | 258 |
+| High-Return Customers | 58 |
 
-## Technology
+The segment names are business interpretations of the behavioural patterns
+identified by the clustering model.
 
-- Python
-- pandas
-- scikit-learn
-- Azure Machine Learning
-- MLflow
-- Azure ML Data Assets
-- Azure ML Pipelines
-- Azure ML Batch Endpoints
-- Git and GitHub
+---
 
-## Project Status
+## Reproducibility and Validation
 
-Project setup and business problem definition.
+The production components were validated against the original modelling
+workflow.
+
+The final Azure ML batch scoring pipeline reproduced the validated segmentation
+results customer by customer:
+
+- 4,334 customers scored
+- Customer IDs matched exactly
+- Cluster assignments matched exactly
+- Segment names matched exactly
+- Adjusted Rand Index: **1.0**
+
+This confirms that the production scoring workflow reproduces the validated
+model behaviour.
+
+---
+
+## Model Packaging
+
+The registered Azure ML model is packaged with the preprocessing artefacts
+required for consistent future scoring:
+
+```text
+model_artifacts/
+├── final_kmeans_model.joblib
+├── standard_scaler.joblib
+├── feature_order.json
+├── preprocessing_metadata.json
+└── model_metadata.json
